@@ -1,17 +1,56 @@
-import { View, Text } from "react-native";
+import { useContext, useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, ScrollView } from "react-native";
+import { AppContext } from "../contexts/AppContext";
+import { setCurrencyFormat } from "../services/currency.js";
+import FinancialBalanceCard from "../components/FinancialBalanceCard.jsx";
+import FinancialPostingCard from "../components/FinancialPostingCard.jsx";
+import PriorityTaskCard from "../components/PriorityTaskCard.jsx";
 
 export default function Home() {
+  const {
+    task,
+    priorityTask,
+    setPriorityTask,
+    getPriorityTask,
+    revenue,
+    expense,
+    sumAmount,
+  } = useContext(AppContext);
+
+  const totalExpense = sumAmount(expense);
+  const totalRevenue = sumAmount(revenue);
+  const balance = totalRevenue - totalExpense;
+
+  useEffect(() => {
+    const fetchPriorityTask = async () => {
+      const task = await getPriorityTask();
+      setPriorityTask(task);
+    };
+    fetchPriorityTask();
+  }, [task]);
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text
-        style={{
-          color: "black",
-          fontSize: 20,
-          textAlign: "center",
-        }}
-      >
-        Home
-      </Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <FinancialBalanceCard value={setCurrencyFormat(balance)} title="Balance" />
+      <PriorityTaskCard priorityTask={priorityTask} />
+      <FinancialPostingCard
+        title="Revenues"
+        totalAmount={setCurrencyFormat(totalRevenue)}
+        value={revenue}
+      />
+      <FinancialPostingCard
+        title="Expenses"
+        totalAmount={setCurrencyFormat(totalExpense)}
+        value={expense}
+      />
+      <StatusBar style="auto" />
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

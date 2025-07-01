@@ -1,18 +1,16 @@
-import { useContext } from "react";
-import { AppContext } from "./contexts/AppContext";
+import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import AppProvider from "./contexts/AppContext";
-import Home from "./pages/Home";
-import Splash from "./pages/Splash";
-
-function MainApp() {
-  const { loading } = useContext(AppContext);
-  return loading ? <Splash /> : <Home />;
-}
+import Routes from "./routes";
 
 export default function App() {
   return (
     <AppProvider>
-      <MainApp />
+      <NavigationContainer>
+        <SafeAreaProvider>
+          <Routes />
+        </SafeAreaProvider>
+      </NavigationContainer>
     </AppProvider>
   );
 }
